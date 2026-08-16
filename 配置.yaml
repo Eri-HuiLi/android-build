@@ -1,0 +1,16 @@
+proxy-providers:
+  yfjc:
+    type: http
+    url: "https://www.yfjc.xyz/api/v1/client/subscribe?token=6097ff7e4c883d3e98072b500d2c0b22"
+    interval: 3600
+    path: ./proxy_providers/yfjc.yaml
+
+proxy-groups:
+  - name: 🇹🇼 台湾
+    type: select
+    use:
+      - yfjc
+    filter: "(?i)台湾|台灣|Taiwan|TW|🇹🇼"
+
+rules:
+  - MATCH,🇹🇼 台湾
