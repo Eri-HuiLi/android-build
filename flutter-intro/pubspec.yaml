@@ -1,0 +1,20 @@
+name: operit_intro
+description: "Operit 自我介绍 Flutter 应用"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Material 3 动态取色由 Flutter 原生支持，无需额外依赖
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,59 @@
+name: Flutter 云端构建
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo_url:
+        description: 'Flutter 项目的 Git 地址'
+        required: true
+        type: string
+      branch:
+        description: '分支（留空则用默认）'
+        required: false
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取项目代码
+        run: |
+          BRANCH="${{ inputs.branch }}"
+          if [ -z "$BRANCH" ]; then
+            git clone --depth 1 "${{ inputs.repo_url }}" project
+          else
+            git clone --depth 1 -b "$BRANCH" "${{ inputs.repo_url }}" project || git clone --depth 1 "${{ inputs.repo_url }}" project
+          fi
+
+      - name: 安装 Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: 补全平台目录 + 拉依赖
+        run: |
+          cd project
+          flutter config --no-analytics
+          # 补全缺失的平台工程（android/ios/web 等）
+          flutter create . --platforms=android --org com.operit 2>&1 | tail -3 || true
+          flutter pub get
+
+      - name: 构建 Debug APK
+        run: |
+          cd project
+          flutter build apk --debug
+          ls -lh build/app/outputs/flutter-apk/
+
+      - name: 构建 Release APK（签名关闭，用于演示）
+        run: |
+          cd project
+          flutter build apk --release --no-shrink 2>&1 | tail -3 || echo "release 失败跳过"
+
+      - name: 上传 APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-apk
+          path: |
+            project/build/app/outputs/flutter-apk/*.apk
+          retention-days: 30
