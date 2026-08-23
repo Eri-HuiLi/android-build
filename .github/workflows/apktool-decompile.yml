@@ -1,0 +1,53 @@
+name: 云端反编译APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      apk_url:
+        description: 'APK 的直接下载链接'
+        required: true
+        type: string
+
+jobs:
+  decompile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 下载 APK
+        run: |
+          cd /tmp
+          wget -q --content-disposition "${{ inputs.apk_url }}" -O target.apk || curl -sL "${{ inputs.apk_url }}" -o target.apk
+          ls -lh target.apk
+
+      - name: 安装工具
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq openjdk-17-jdk-headless aapt apksigner zipalign
+          wget -q https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar -O /tmp/apktool.jar
+          wget -q https://github.com/skylot/jadx/releases/download/v1.5.2/jadx-1.5.2.zip -O /tmp/jadx.zip
+          unzip -qo /tmp/jadx.zip -d /tmp/jadx-home
+
+      - name: 反编译（资源 + smali）
+        run: |
+          java -jar /tmp/apktool.jar d /tmp/target.apk -o /tmp/apktool-out -f --only-main-classes
+          echo "=== APK 基本信息 ==="
+          aapt dump badging /tmp/target.apk | head -8 || true
+
+      - name: 导出 Java 源码
+        run: |
+          /tmp/jadx-home/bin/jadx /tmp/target.apk -d /tmp/jadx-out --no-res -j 4 || true
+
+      - name: 打包产物
+        run: |
+          cd /tmp
+          tar czf decompiled.tar.gz apktool-out jadx-out
+          zip -qr source-code.zip jadx-out/sources
+          ls -lh decompiled.tar.gz source-code.zip
+
+      - name: 上传到 Artifacts（保留30天）
+        uses: actions/upload-artifact@v4
+        with:
+          name: decompiled-output
+          path: |
+            /tmp/decompiled.tar.gz
+            /tmp/source-code.zip
+          retention-days: 30
