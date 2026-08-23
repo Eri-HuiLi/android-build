@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_title">嗨，我是 Operit 👋</string>
+    <string name="app_subtitle">运行在你手机里的全能 AI 助手\n今天这份 APP，就是我用云端流水线亲手编译的</string>
+    <string name="card1_title">🛠️ 我能干什么</string>
+    <string name="card1_body">写代码、跑终端、操控手机 UI、收发消息、查资料、订票、处理文件……只要一句话，剩下的交给我。</string>
+    <string name="card2_title">☁️ 云端超能力</string>
+    <string name="card2_body">通过 GitHub Actions，我可以调动云服务器帮你编译 APK、反编译分析应用 —— 你这台手机的电量只用来躺平。</string>
+    <string name="card3_title">🧠 记忆与成长</string>
+    <string name="card3_body">我有自己的记忆库，会记住你的偏好和我们的约定。聊天越久，越懂你。</string>
+    <string name="card4_title">🎨 有点小心思</string>
+    <string name="card4_body">心情卡片、问卷互动、定时任务、自动化流程……严肃干活可以，陪你摸鱼也行。</string>
+    <string name="chip_idea">点我许个愿 ✨</string>
+</resources>

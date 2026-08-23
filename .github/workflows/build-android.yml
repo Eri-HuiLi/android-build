@@ -40,9 +40,10 @@ jobs:
           if [ -f gradlew ]; then
             ./gradlew assembleDebug --no-daemon --stacktrace || ./gradlew assembleRelease --no-daemon || exit 1
           else
-            echo "未找到 gradlew，尝试用系统 gradle..."
-            sudo apt-get install -y -qq gradle || true
-            gradle assembleDebug --no-daemon || exit 1
+            echo "未找到 gradlew，下载官方 Gradle 8.7..."
+            wget -q https://services.gradle.org/distributions/gradle-8.7-bin.zip -P /tmp
+            sudo unzip -qo /tmp/gradle-8.7-bin.zip -d /opt
+            /opt/gradle-8.7/bin/gradle assembleDebug --no-daemon --stacktrace || exit 1
           fi
           find . -name "*.apk" -exec ls -lh {} \;
 
