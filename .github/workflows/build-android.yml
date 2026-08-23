@@ -18,7 +18,12 @@ jobs:
     steps:
       - name: 拉取项目源码
         run: |
-          git clone --depth 1 -b "${{ inputs.branch || 'main' }}" "${{ inputs.repo_url }}" project
+          BRANCH="${{ inputs.branch }}"
+          if [ -z "$BRANCH" ]; then
+            git clone --depth 1 "${{ inputs.repo_url }}" project
+          else
+            git clone --depth 1 -b "$BRANCH" "${{ inputs.repo_url }}" project || git clone --depth 1 "${{ inputs.repo_url }}" project
+          fi
           cd project
           git submodule update --init --recursive --depth 1 || true
 
