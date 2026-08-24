@@ -781,6 +781,7 @@ fun MainScreen() {
             onDismiss = { showCfileConfig = false }
         )
     }
+    }
 
     // 首次下载引导：加入「忽略电池优化」白名单（锁屏保持下载生效的前提）
     if (showBatteryGuide) {
