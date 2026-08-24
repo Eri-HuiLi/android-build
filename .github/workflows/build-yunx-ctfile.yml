@@ -16,11 +16,14 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: 进入 yunx-ctfile 子目录编译 Debug APK
+      - name: 编译 Debug APK
         run: |
           cd yunx-ctfile
+          # 海外 runner 访问阿里云镜像会 502，注释掉镜像行，走官方源
+          sed -i 's|^\s*maven { url = uri("https://maven.aliyun.com.*$||' settings.gradle.kts
           chmod +x gradlew
-          ./gradlew :app:assembleDebug --no-daemon --stacktrace 2>&1 | tail -40 || exit 1
+          set -o pipefail
+          ./gradlew :app:assembleDebug --no-daemon --stacktrace 2>&1 | tail -60
 
       - name: 上传 APK
         uses: actions/upload-artifact@v4
@@ -28,3 +31,4 @@ jobs:
           name: yunx-ctfile-apk
           path: yunx-ctfile/app/build/outputs/**/*.apk
           retention-days: 30
+          if-no-files-found: error
