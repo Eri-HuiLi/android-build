@@ -22,8 +22,10 @@ jobs:
           # 海外 runner 访问阿里云镜像会 502，注释掉镜像行，走官方源
           sed -i 's|^\s*maven { url = uri("https://maven.aliyun.com.*$||' settings.gradle.kts
           chmod +x gradlew
-          set -o pipefail
-          ./gradlew :app:assembleDebug --no-daemon --stacktrace 2>&1 | tail -60
+          ./gradlew :app:assembleDebug --no-daemon > /tmp/build.log 2>&1 || true
+          echo "===== 错误摘要 ====="
+          grep -E '^e: |error:|BUILD (SUCCESSFUL|FAILED)|FAILURE: ' /tmp/build.log | head -50
+          if grep -q 'BUILD SUCCESSFUL' /tmp/build.log; then exit 0; else exit 1; fi
 
       - name: 上传 APK
         uses: actions/upload-artifact@v4
